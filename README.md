@@ -35,5 +35,5 @@ This project applies data preprocessing, feature engineering, exploratory data a
 
 - Logistic Regression
 - Random Forest
-- Support Vector Machine (SVM)
+- K-Nearest Neighbors
 - Gradient Boosting
