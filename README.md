@@ -8,9 +8,6 @@ This project applies data preprocessing, feature engineering, exploratory data a
 
 ##  Key Features
 
-### Dataset — 35 Features × 110,000 Rows
-
-The dataset covers eight groups of features across 110,000 synthetic patient records.
 
 **Demographics** — `Age`, `Gender`, `Occupation` (21 job types: Doctor, Engineer, Teacher, Nurse, etc.), `Is_Weekend`
 
