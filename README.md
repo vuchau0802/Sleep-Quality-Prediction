@@ -1,4 +1,4 @@
-# Sleep Quality Prediction using Machine Learning
+# Sleep Quality Prediction
 
 An end-to-end Machine Learning project for predicting sleep quality based on lifestyle, health, and behavioral factors.
 
