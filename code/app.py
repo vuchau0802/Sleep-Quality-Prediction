@@ -1,11 +1,3 @@
-"""
-Sleep Quality API — Flask Backend
-Endpoints:
-  GET  /api/metadata       → model info, options, metrics
-  POST /api/predict        → Sleep Disorder + Quality of Sleep + recommendations
-  GET  /api/health         → health check
-"""
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -15,9 +7,8 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-CORS(app)  # allow requests from HTML files
+CORS(app) 
 
-# ── Load artifacts ────────────────────────────────────────────────────────────
 BASE = os.path.join(os.path.dirname(__file__), "models")
 clf  = joblib.load(f"classifier.pkl")
 reg  = joblib.load(f"regressor.pkl")
@@ -27,7 +18,6 @@ with open(f"metadata.json") as f:
 
 FEATURES = META["features"]
 
-# -- Recommendation engine -----------------------------------------------------
 def rec(category, priority, title, detail, tips=None):
     """Helper to build a recommendation dict."""
     r = {"category": category, "priority": priority, "title": title, "detail": detail}
@@ -63,9 +53,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
     deficit     = float(data.get("Sleep_Deficit", max(0, 8 - sleep_h)))
     act_stress  = float(data.get("Activity_Stress_Ratio", activity / (stress + 1)))
  
-    # =========================================================================
-    # 1. SLEEP DISORDER - always first if detected
-    # =========================================================================
     if disorder == "Insomnia":
         recs.append(rec(
             "Sleep Disorder", "Critical",
@@ -96,9 +83,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 2. SLEEP DURATION
-    # =========================================================================
     if sleep_h < 5:
         recs.append(rec(
             "Sleep Duration", "Critical",
@@ -142,10 +126,7 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 3. STRESS
-    # =========================================================================
-    if stress >= 9:
+      if stress >= 9:
         recs.append(rec(
             "Stress", "Critical",
             "Extreme Stress -- Urgent Intervention Required",
@@ -186,10 +167,7 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 4. MENTAL HEALTH
-    # =========================================================================
-    if mental <= 3:
+      if mental <= 3:
         recs.append(rec(
             "Mental Health", "Critical",
             "Very Low Mental Health Score -- Professional Support Needed",
@@ -230,9 +208,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 5. CAFFEINE
-    # =========================================================================
     if caffeine > 400:
         recs.append(rec(
             "Caffeine", "Critical",
@@ -273,9 +248,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 6. ALCOHOL
-    # =========================================================================
     if alcohol > 14:
         recs.append(rec(
             "Alcohol", "Critical",
@@ -316,9 +288,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 7. SCREEN TIME
-    # =========================================================================
     if screen > 90:
         recs.append(rec(
             "Screen Time", "High",
@@ -346,9 +315,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 8. PHYSICAL ACTIVITY
-    # =========================================================================
     if activity == 0:
         recs.append(rec(
             "Physical Activity", "High",
@@ -400,9 +366,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 9. STEPS
-    # =========================================================================
     if steps < 3000:
         recs.append(rec(
             "Daily Movement", "High",
@@ -429,9 +392,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 10. AWAKENINGS
-    # =========================================================================
     if awakenings >= 5:
         recs.append(rec(
             "Sleep Continuity", "Critical",
@@ -472,9 +432,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 11. HEART RATE
-    # =========================================================================
     if hr > 90:
         recs.append(rec(
             "Heart Rate", "High",
@@ -502,9 +459,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 12. ROOM ENVIRONMENT
-    # =========================================================================
     if temp > 23:
         recs.append(rec(
             "Sleep Environment", "Medium",
@@ -558,9 +512,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 13. WORK HOURS
-    # =========================================================================
     if work_h >= 12:
         recs.append(rec(
             "Work-Life Balance", "High",
@@ -587,9 +538,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 14. NAPPING
-    # =========================================================================
     if nap > 60:
         recs.append(rec(
             "Napping", "High",
@@ -617,9 +565,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 15. BMI
-    # =========================================================================
     if bmi == "Obese":
         recs.append(rec(
             "Body Weight", "High",
@@ -648,9 +593,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 16. SMOKING
-    # =========================================================================
     if smoking == "Yes":
         recs.append(rec(
             "Smoking", "High",
@@ -666,9 +608,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 17. AGE-SPECIFIC
-    # =========================================================================
     if age >= 60:
         recs.append(rec(
             "Age-Related Sleep", "Medium",
@@ -696,9 +635,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
                 ]
             ))
  
-    # =========================================================================
-    # 18. OCCUPATION-SPECIFIC
-    # =========================================================================
     high_stress_jobs = ["Doctor", "Nurse", "Lawyer", "Manager", "Software Engineer"]
     shift_risk_jobs  = ["Doctor", "Nurse", "Sales Representative"]
  
@@ -729,10 +665,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # 19. COMBO / COMPOUNDING RISK
-    # =========================================================================
-    # High stress + low activity = especially bad combination
     if stress >= 7 and activity < 20:
         recs.append(rec(
             "Compounding Risk", "High",
@@ -819,9 +751,6 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-    # =========================================================================
-    # SORT and RETURN
-    # =========================================================================
     order = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
     recs.sort(key=lambda r: order.get(r["priority"], 9))
  
@@ -836,7 +765,7 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
     return unique_recs  # return ALL relevant recommendations
  
  
-# -- Routes --------------------------------------------------------------------
+# -- Routes
 @app.route("/api/health")
 def health():
     return jsonify({"status": "ok", "models": ["classifier", "regressor"]})
