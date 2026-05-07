@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Quality Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --bg: #07080f;
+            --surface: #0e1020;
+            --card: #131526;
+            --border: rgba(120, 130, 255, 0.13);
+            --accent: #6c6fff;
+            --accent2: #36d9b0;
+            --accent3: #ff6b8a;
+            --text: #e8eaff;
+            --muted: #7e84a8;
+            --critical: #ff4d6d;
+            --high: #ff9f43;
+            --medium: #ffd060;
+            --low: #36d9b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        /* Cosmic background */
+        
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 50% at 20% 20%, rgba(108, 111, 255, 0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(54, 217, 176, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .page {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+        /* Header */
+        
+        header {
+            text-align: center;
+            margin-bottom: 52px;
+            animation: fadeUp 0.7s ease both;
+        }
+        
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(108, 111, 255, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 6px 18px;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent2);
+            animation: pulse 2s infinite;
+        }
+        
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #a8aaff 0%, var(--accent2) 60%, #ff6b8a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 10px;
+            letter-spacing: 0.04em;
+        }
+        /* Form layout */
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        
+        .section-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--accent);
+            margin: 32px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            animation: fadeUp 0.5s ease both;
+        }
+        
+        .field label {
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        
+        .field input,
+        .field select {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            padding: 11px 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(108, 111, 255, 0.15);
+        }
+        
+        .field select option {
+            background: #0e1020;
+        }
+        /* Range inputs */
+        
+        .range-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .range-wrap input[type=range] {
+            flex: 1;
+            padding: 0;
+            background: transparent;
+            border: none;
+            -webkit-appearance: auto;
+            appearance: auto;
+            accent-color: var(--accent);
+        }
+        
+        .range-val {
+            min-width: 30px;
+            text-align: right;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent2);
+        }
+        /* Toggle */
+        
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .toggle.on {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            transition: left 0.2s;
+        }
+        
+        .toggle.on::after {
+            left: 23px;
+        }
+        
+        .toggle-label {
+            font-size: 13px;
+            color: var(--text);
+        }
+        /* Submit button */
+        
+        .submit-row {
+            display: flex;
+            justify-content: center;
+            margin: 36px 0;
+        }
+        
+        .btn-predict {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.05em;
+            padding: 16px 52px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 30px rgba(108, 111, 255, 0.35);
+        }
+        
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 40px rgba(108, 111, 255, 0.45);
+        }
+        
+        .btn-predict:active {
+            transform: translateY(0);
+        }
+        
+        .btn-predict.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .btn-predict .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-left: 10px;
+        }
+        
+        .btn-predict.loading .spinner {
+            display: inline-block;
+        }
+        /* Results */
+        
+        #results {
+            display: none;
+            animation: fadeUp 0.6s ease both;
+        }
+        
+        .results-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        @media (max-width: 600px) {
+            .results-top {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .result-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+        }
+        
+        .result-card.disorder::before {
+            background: linear-gradient(90deg, var(--accent3), var(--accent));
+        }
+        
+        .card-label {
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        
+        .disorder-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        
+        .disorder-name.none {
+            color: var(--accent2);
+        }
+        
+        .disorder-name.insomnia {
+            color: var(--accent);
+        }
+        
+        .disorder-name.apnea {
+            color: var(--accent3);
+        }
+        
+        .prob-bars {
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        
+        .prob-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+        }
+        
+        .prob-row span:first-child {
+            width: 90px;
+            color: var(--muted);
+        }
+        
+        .prob-bar-bg {
+            flex: 1;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 3px;
+        }
+        
+        .prob-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--accent);
+            transition: width 1s ease;
+        }
+        
+        .prob-row span:last-child {
+            width: 40px;
+            text-align: right;
+            color: var(--text);
+        }
+        
+        .quality-score {
+            font-family: 'Syne', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--accent2), #6c6fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .quality-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+        
+        .quality-bar {
+            margin-top: 16px;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quality-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--accent3), var(--accent), var(--accent2));
+            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        /* Recommendations */
+        
+        .recs-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--accent);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .recs-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        
+        .rec-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .rec-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            transition: border-color 0.2s, transform 0.2s;
+            animation: fadeUp 0.4s ease both;
+        }
+        
+        .rec-card:hover {
+            border-color: rgba(108, 111, 255, 0.3);
+            transform: translateX(4px);
+        }
+        
+        .rec-priority {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 20px;
+            white-space: nowrap;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .priority-Critical {
+            background: rgba(255, 77, 109, 0.15);
+            color: var(--critical);
+            border: 1px solid rgba(255, 77, 109, 0.3);
+        }
+        
+        .priority-High {
+            background: rgba(255, 159, 67, 0.15);
+            color: var(--high);
+            border: 1px solid rgba(255, 159, 67, 0.3);
+        }
+        
+        .priority-Medium {
+            background: rgba(255, 208, 96, 0.12);
+            color: var(--medium);
+            border: 1px solid rgba(255, 208, 96, 0.25);
+        }
+        
+        .priority-Low {
+            background: rgba(54, 217, 176, 0.1);
+            color: var(--low);
+            border: 1px solid rgba(54, 217, 176, 0.25);
+        }
+        
+        .rec-body {
+            flex: 1;
+        }
+        
+        .rec-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .rec-detail {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+        
+        .rec-cat {
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        
+        .error-box {
+            background: rgba(255, 77, 109, 0.1);
+            border: 1px solid rgba(255, 77, 109, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 13px;
+            color: var(--critical);
+            display: none;
+        }
+        /* Animations */
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        /* Staggered animation for fields */
+        
+        .field:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+        
+        .field:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+        
+        .field:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+        
+        .field:nth-child(4) {
+            animation-delay: 0.20s;
+        }
+        
+        .field:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+        
+        .field:nth-child(6) {
+            animation-delay: 0.30s;
+        }
+        /* API note */
+        
+        .api-note {
+            text-align: center;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 16px;
+            padding: 10px 16px;
+            background: rgba(108, 111, 255, 0.06);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .api-note a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .api-note a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+
+        <header>
+            <h1>Sleep Quality Predictor</h1>
+            <p class="subtitle">Enter your lifestyle data — get AI-powered sleep disorder detection & personalized recommendations</p>
+        </header>
+
+
+        <!-- Demographics -->
+        <div class="section-label">Demographics</div>
+        <div class="form-grid">
+            <div class="field"><label>Age</label><input type="number" id="Age" value="32" min="18" max="90"></div>
+            <div class="field">
+                <label>Gender</label>
+                <select id="Gender"><option>Male</option><option>Female</option></select>
+            </div>
+            <div class="field">
+                <label>Occupation</label>
+                <select id="Occupation">
+        <option>Accountant</option><option>Doctor</option><option>Engineer</option>
+        <option>Lawyer</option><option>Manager</option><option>Nurse</option>
+        <option>Sales Representative</option><option>Scientist</option>
+        <option>Software Engineer</option><option>Teacher</option><option>Others</option>
+      </select>
+            </div>
+            <div class="field">
+                <label>BMI Category</label>
+                <select id="BMI_Category"><option>Normal</option><option>Overweight</option><option>Obese</option></select>
+            </div>
+        </div>
+
+        <!-- Sleep -->
+        <div class="section-label">Sleep Patterns</div>
+        <div class="form-grid">
+            <div class="field">
+                <label>Sleep Duration (hours)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Sleep_Duration_Hours" min="3" max="12" step="0.5" value="7" oninput="updateVal(this,'sleep_h_val')">
+                    <span class="range-val" id="sleep_h_val">7</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Awakenings Per Night</label>
+                <div class="range-wrap">
+                    <input type="range" id="Awakenings_Per_Night" min="0" max="10" step="1" value="1" oninput="updateVal(this,'awake_val')">
+                    <span class="range-val" id="awake_val">1</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Nap Duration (mins)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Nap_Duration_Mins" min="0" max="120" step="5" value="0" oninput="updateVal(this,'nap_val')">
+                    <span class="range-val" id="nap_val">0</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Is Weekend?</label>
+                <div class="toggle-wrap">
+                    <div class="toggle" id="toggle_weekend" onclick="toggleSwitch(this,'Is_Weekend')"></div>
+                    <span class="toggle-label" id="weekend_label">No</span>
+                    <input type="hidden" id="Is_Weekend" value="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Lifestyle -->
+        <div class="section-label">Lifestyle & Health</div>
+        <div class="form-grid">
+            <div class="field">
+                <label>Stress Level (1–10)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Stress_Level" min="1" max="10" step="1" value="5" oninput="updateVal(this,'stress_val')">
+                    <span class="range-val" id="stress_val">5</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Mental Health Score (1–10)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Mental_Health_Score" min="1" max="10" step="1" value="7" oninput="updateVal(this,'mental_val')">
+                    <span class="range-val" id="mental_val">7</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Physical Activity (mins/day)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Physical_Activity_Mins" min="0" max="180" step="5" value="30" oninput="updateVal(this,'activity_val')">
+                    <span class="range-val" id="activity_val">30</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Daily Steps</label>
+                <div class="range-wrap">
+                    <input type="range" id="Daily_Steps" min="500" max="20000" step="500" value="7000" oninput="updateVal(this,'steps_val')">
+                    <span class="range-val" id="steps_val">7000</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Exercise Type</label>
+                <select id="Exercise_Type"><option>Cardio</option><option>Strength</option><option>Yoga</option><option>None</option></select>
+            </div>
+            <div class="field">
+                <label>Smoking Status</label>
+                <select id="Smoking_Status"><option>No</option><option>Yes</option></select>
+            </div>
+        </div>
+
+        <!-- Environment & Diet -->
+        <div class="section-label">Environment & Diet</div>
+        <div class="form-grid">
+            <div class="field">
+                <label>Caffeine Intake (mg/day)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Caffeine_Intake_mg" min="0" max="600" step="10" value="150" oninput="updateVal(this,'caff_val')">
+                    <span class="range-val" id="caff_val">150</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Screen Time Before Bed (mins)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Screen_Time_Before_Bed_Mins" min="0" max="120" step="5" value="30" oninput="updateVal(this,'screen_val')">
+                    <span class="range-val" id="screen_val">30</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Alcohol Units / Week</label>
+                <div class="range-wrap">
+                    <input type="range" id="Alcohol_Units_Per_Week" min="0" max="30" step="1" value="2" oninput="updateVal(this,'alc_val')">
+                    <span class="range-val" id="alc_val">2</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Room Temperature (°C)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Room_Temperature_C" min="14" max="30" step="0.5" value="20" oninput="updateVal(this,'temp_val')">
+                    <span class="range-val" id="temp_val">20</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Noise Level (dB)</label>
+                <div class="range-wrap">
+                    <input type="range" id="Noise_Level_dB" min="10" max="90" step="1" value="40" oninput="updateVal(this,'noise_val')">
+                    <span class="range-val" id="noise_val">40</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Work Hours / Day</label>
+                <div class="range-wrap">
+                    <input type="range" id="Work_Hours_Per_Day" min="0" max="16" step="1" value="8" oninput="updateVal(this,'work_val')">
+                    <span class="range-val" id="work_val">8</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Heart Rate (BPM)</label>
+                <input type="number" id="Heart_Rate_BPM" value="70" min="40" max="130">
+            </div>
+        </div>
+
+        <div class="submit-row">
+            <button class="btn-predict" id="predictBtn" onclick="runPrediction()">
+      Analyze Sleep Profile <span class="spinner"></span>
+    </button>
+        </div>
+
+        <div class="error-box" id="errorBox"></div>
+
+        <!-- Results -->
+        <div id="results">
+            <div class="results-top">
+                <div class="result-card disorder">
+                    <div class="card-label">Predicted Sleep Disorder</div>
+                    <div class="disorder-name" id="disorderName">—</div>
+                    <div class="prob-bars" id="probBars"></div>
+                </div>
+                <div class="result-card">
+                    <div class="card-label">Predicted Quality of Sleep</div>
+                    <div class="quality-score" id="qualityScore">—</div>
+                    <div class="quality-sub" id="qualitySub"></div>
+                    <div class="quality-bar">
+                        <div class="quality-bar-fill" id="qualityBarFill" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recs-title">Personalized Recommendations</div>
+            <div class="rec-list" id="recList"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const API = 'http://localhost:5050';
+
+        function updateVal(el, valId) {
+            document.getElementById(valId).textContent = el.value;
+        }
+
+        function toggleSwitch(el, inputId) {
+            el.classList.toggle('on');
+            const isOn = el.classList.contains('on');
+            document.getElementById(inputId).value = isOn ? 1 : 0;
+            const label = document.getElementById('weekend_label');
+            if (label) label.textContent = isOn ? 'Yes' : 'No';
+        }
+
+        function getVal(id) {
+            const el = document.getElementById(id);
+            if (!el) return null;
+            const v = el.value;
+            const n = parseFloat(v);
+            return isNaN(n) ? v : n;
+        }
+
+        async function runPrediction() {
+            const btn = document.getElementById('predictBtn');
+            const err = document.getElementById('errorBox');
+            btn.classList.add('loading');
+            btn.textContent = 'Analyzing... ';
+            btn.innerHTML += '<span class="spinner" style="display:inline-block"></span>';
+            err.style.display = 'none';
+
+            const payload = {
+                Age: getVal('Age'),
+                Gender: document.getElementById('Gender').value,
+                Occupation: document.getElementById('Occupation').value,
+                BMI_Category: document.getElementById('BMI_Category').value,
+                Smoking_Status: document.getElementById('Smoking_Status').value,
+                Sleep_Duration_Hours: getVal('Sleep_Duration_Hours'),
+                Physical_Activity_Mins: getVal('Physical_Activity_Mins'),
+                Stress_Level: getVal('Stress_Level'),
+                Heart_Rate_BPM: getVal('Heart_Rate_BPM'),
+                Daily_Steps: getVal('Daily_Steps'),
+                Caffeine_Intake_mg: getVal('Caffeine_Intake_mg'),
+                Screen_Time_Before_Bed_Mins: getVal('Screen_Time_Before_Bed_Mins'),
+                Alcohol_Units_Per_Week: getVal('Alcohol_Units_Per_Week'),
+                Room_Temperature_C: getVal('Room_Temperature_C'),
+                Noise_Level_dB: getVal('Noise_Level_dB'),
+                Work_Hours_Per_Day: getVal('Work_Hours_Per_Day'),
+                Exercise_Type: document.getElementById('Exercise_Type').value,
+                Mental_Health_Score: getVal('Mental_Health_Score'),
+                Awakenings_Per_Night: getVal('Awakenings_Per_Night'),
+                Nap_Duration_Mins: getVal('Nap_Duration_Mins'),
+                Is_Weekend: getVal('Is_Weekend'),
+            };
+
+            try {
+                const res = await fetch(`${API}/api/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                renderResults(data);
+            } catch (e) {
+                err.style.display = 'block';
+                err.textContent = `Could not connect to API: ${e.message}. Make sure python app.py is running on localhost:5050.`;
+            } finally {
+                btn.classList.remove('loading');
+                btn.innerHTML = 'Analyze Sleep Profile';
+            }
+        }
+
+        function renderResults(data) {
+            const {
+                disorder,
+                quality_of_sleep,
+                recommendations
+            } = data;
+
+            // Disorder
+            const dn = document.getElementById('disorderName');
+            dn.textContent = disorder.prediction;
+            const cls = disorder.prediction === 'None' ? 'none' :
+                disorder.prediction === 'Insomnia' ? 'insomnia' : 'apnea';
+            dn.className = `disorder-name ${cls}`;
+
+            // Probability bars
+            const pb = document.getElementById('probBars');
+            pb.innerHTML = '';
+            Object.entries(disorder.probabilities)
+                .sort((a, b) => b[1] - a[1])
+                .forEach(([label, prob]) => {
+                    pb.innerHTML += `
+        <div class="prob-row">
+          <span>${label}</span>
+          <div class="prob-bar-bg">
+            <div class="prob-bar-fill" style="width:${(prob*100).toFixed(1)}%"></div>
+          </div>
+          <span>${(prob*100).toFixed(1)}%</span>
+        </div>`;
+                });
+
+            // Quality score
+            document.getElementById('qualityScore').textContent = quality_of_sleep.toFixed(1);
+            const label = quality_of_sleep >= 8 ? 'Excellent' :
+                quality_of_sleep >= 6 ? 'Good' :
+                quality_of_sleep >= 4 ? 'Fair' : 'Poor';
+            document.getElementById('qualitySub').textContent = `${label} sleep quality predicted`;
+            setTimeout(() => {
+                document.getElementById('qualityBarFill').style.width = `${quality_of_sleep * 10}%`;
+            }, 100);
+
+            // Recommendations
+            const rl = document.getElementById('recList');
+            rl.innerHTML = '';
+            recommendations.forEach((rec, i) => {
+                const card = document.createElement('div');
+                card.className = 'rec-card';
+                card.style.animationDelay = `${i * 0.07}s`;
+                card.innerHTML = `
+      <span class="rec-priority priority-${rec.priority}">${rec.priority}</span>
+      <div class="rec-body">
+        <div class="rec-cat">${rec.category}</div>
+        <div class="rec-title">${rec.title}</div>
+        <div class="rec-detail">${rec.detail}</div>
+      </div>`;
+                rl.appendChild(card);
+            });
+
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    </script>
+</body>
+
+</html>
