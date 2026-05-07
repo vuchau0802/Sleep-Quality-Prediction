@@ -1,0 +1,125 @@
+{
+  "features": [
+    "Age",
+    "Gender",
+    "Occupation",
+    "BMI_Category",
+    "Smoking_Status",
+    "Sleep_Duration_Hours",
+    "Physical_Activity_Mins",
+    "Stress_Level",
+    "Heart_Rate_BPM",
+    "Daily_Steps",
+    "Caffeine_Intake_mg",
+    "Screen_Time_Before_Bed_Mins",
+    "Alcohol_Units_Per_Week",
+    "Room_Temperature_C",
+    "Noise_Level_dB",
+    "Work_Hours_Per_Day",
+    "Exercise_Type",
+    "Mental_Health_Score",
+    "Awakenings_Per_Night",
+    "Nap_Duration_Mins",
+    "Is_Weekend",
+    "Sleep_Deficit",
+    "Activity_Stress_Ratio"
+  ],
+  "numeric_features": [
+    "Age",
+    "Sleep_Duration_Hours",
+    "Physical_Activity_Mins",
+    "Stress_Level",
+    "Heart_Rate_BPM",
+    "Daily_Steps",
+    "Caffeine_Intake_mg",
+    "Screen_Time_Before_Bed_Mins",
+    "Alcohol_Units_Per_Week",
+    "Room_Temperature_C",
+    "Noise_Level_dB",
+    "Work_Hours_Per_Day",
+    "Mental_Health_Score",
+    "Awakenings_Per_Night",
+    "Nap_Duration_Mins",
+    "Is_Weekend",
+    "Sleep_Deficit",
+    "Activity_Stress_Ratio"
+  ],
+  "categorical_features": [
+    "Gender",
+    "Occupation",
+    "BMI_Category",
+    "Smoking_Status",
+    "Exercise_Type"
+  ],
+  "disorder_classes": [
+    "Insomnia",
+    "None",
+    "Sleep Apnea"
+  ],
+  "classifier_metrics": {
+    "accuracy": 0.594,
+    "f1_score": 0.4427
+  },
+  "regressor_metrics": {
+    "mae": 2.4608,
+    "rmse": 2.8528,
+    "r2": -0.0155
+  },
+  "top_features": [
+    "Daily_Steps",
+    "Caffeine_Intake_mg",
+    "Activity_Stress_Ratio",
+    "Screen_Time_Before_Bed_Mins",
+    "Room_Temperature_C",
+    "Nap_Duration_Mins",
+    "Physical_Activity_Mins",
+    "Age",
+    "Noise_Level_dB",
+    "Heart_Rate_BPM"
+  ],
+  "feature_importances": {
+    "Daily_Steps": 0.0647,
+    "Caffeine_Intake_mg": 0.0638,
+    "Activity_Stress_Ratio": 0.0604,
+    "Screen_Time_Before_Bed_Mins": 0.0597,
+    "Room_Temperature_C": 0.0597,
+    "Nap_Duration_Mins": 0.0571,
+    "Physical_Activity_Mins": 0.056,
+    "Age": 0.0533,
+    "Noise_Level_dB": 0.0533,
+    "Heart_Rate_BPM": 0.0507
+  },
+  "categorical_options": {
+    "Gender": [
+      "Female",
+      "Male"
+    ],
+    "Occupation": [
+      "Accountant",
+      "Doctor",
+      "Engineer",
+      "Lawyer",
+      "Manager",
+      "Nurse",
+      "Sales Representative",
+      "Scientist",
+      "Software Engineer",
+      "Teacher"
+    ],
+    "BMI_Category": [
+      "Normal",
+      "Obese",
+      "Overweight"
+    ],
+    "Smoking_Status": [
+      "No",
+      "Yes"
+    ],
+    "Exercise_Type": [
+      "Cardio",
+      "None",
+      "Strength",
+      "Yoga"
+    ]
+  }
+}
