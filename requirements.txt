@@ -9,4 +9,5 @@ joblib
 scipy
 plotly
 flask
+flask-cors
 streamlit
