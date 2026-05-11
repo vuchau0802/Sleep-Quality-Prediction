@@ -52,14 +52,14 @@ pip install -r requirements.txt
 ### 4. Train the models
  
 ```bash
-python train_model.py
+python code/train_model.py
 ```
 
 
 ### 5. Start the Flask API
  
 ```bash
-python app.py
+python code/app.py
 ```
 
 ---
