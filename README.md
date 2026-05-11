@@ -22,9 +22,43 @@ An end-to-end machine learning system that predicts sleep disorder classificatio
 
 ---
 
-##  Multiple ML models
+## Steps to Run
+ 
+### 1. Clone the repository
+ 
+```bash
+git clone https://github.com/vuchau0802/Sleep-Quality-Prediction.git
+cd Sleep-Quality-Prediction
+```
+ 
+### 2. Create and activate a virtual environment
+ 
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+ 
+# macOS / Linux
+python -m venv venv
+source venv/bin/activate
+```
 
-- Logistic Regression
-- Random Forest
-- K-Nearest Neighbors
-- Gradient Boosting
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt   
+```
+
+### 4. Train the models
+ 
+```bash
+python train_model.py
+```
+
+
+### 5. Start the Flask API
+ 
+```bash
+python app.py
+```
+
