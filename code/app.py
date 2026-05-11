@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import joblib
 import json
@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../templates")
 CORS(app) 
 
 BASE = os.path.join(os.path.dirname(__file__), "models")
@@ -24,7 +24,6 @@ def rec(category, priority, title, detail, tips=None):
     if tips:
         r["tips"] = tips
     return r
- 
  
 def generate_recommendations(data: dict, disorder: str, quality: float):
     recs = []
@@ -126,7 +125,7 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-      if stress >= 9:
+    if stress >= 9:
         recs.append(rec(
             "Stress", "Critical",
             "Extreme Stress -- Urgent Intervention Required",
@@ -167,7 +166,7 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
             ]
         ))
  
-      if mental <= 3:
+    if mental <= 3:
         recs.append(rec(
             "Mental Health", "Critical",
             "Very Low Mental Health Score -- Professional Support Needed",
@@ -754,7 +753,7 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
     order = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
     recs.sort(key=lambda r: order.get(r["priority"], 9))
  
-    # De-duplicate by title (in case combo rules overlap with individual rules)
+    # De-duplicate by title
     seen = set()
     unique_recs = []
     for r in recs:
@@ -766,6 +765,16 @@ def generate_recommendations(data: dict, disorder: str, quality: float):
  
  
 # -- Routes
+# Frontend pages
+@app.route("/")
+def dashboard_page():
+    return render_template("sleep_dashboard.html")
+
+
+@app.route("/predictor")
+def predictor_page():
+    return render_template("sleep_predictor.html")
+
 @app.route("/api/health")
 def health():
     return jsonify({"status": "ok", "models": ["classifier", "regressor"]})
