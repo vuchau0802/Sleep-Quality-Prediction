@@ -1,33 +1,24 @@
 # Sleep Quality Prediction
 
-An end-to-end Machine Learning project for predicting sleep quality based on lifestyle, health, and behavioral factors.
-
-This project applies data preprocessing, feature engineering, exploratory data analysis (EDA), and multiple machine learning models to analyze sleep patterns and predict sleep quality outcomes.
+An end-to-end machine learning system that predicts sleep disorder classification (None / Insomnia / Sleep Apnea) and sleep quality score regression from 23 lifestyle, physiological, and behavioral features — served via a Flask REST API with an interactive analytics dashboard and real-time predictor UI.
 
 ---
 
-##  Key Features
-
-
-**Demographics** — `Age`, `Gender`, `Occupation` (21 job types: Doctor, Engineer, Teacher, Nurse, etc.), `Is_Weekend`
-
-**Body Metrics** — `BMI_Value`, `BMI_Category` (Underweight / Normal / Overweight / Obese), `Smoking_Status` (Never / Former / Current)
-
-**Sleep Core** — `Sleep_Duration_Hours`, `Bedtime`, `Wake_Up_Time`, `Quality_of_Sleep` (score 1–10), `Sleep_Efficiency_Pct`
-
-**Sleep Architecture** — `REM_Sleep_Pct`, `Deep_Sleep_Pct`, `Light_Sleep_Pct`, `Awakenings_Per_Night`, `Nap_Duration_Mins`
-
-**Lifestyle** — `Physical_Activity_Mins`, `Exercise_Type` (Walking / Running / Gym / Yoga / Swimming / Cycling / Mixed / None), `Stress_Level` (1–10), `Mental_Health_Score` (0–100), `Work_Hours_Per_Day`
-
-**Vitals** — `Heart_Rate_BPM`, `Blood_Pressure`, `Systolic_BP`, `Diastolic_BP`, `Daily_Steps`
-
-**Environment** — `Caffeine_Intake_mg`, `Screen_Time_Before_Bed_Mins`, `Alcohol_Units_Per_Week`, `Room_Temperature_C`, `Noise_Level_dB`
-
-**Derived Features** — `Sleep_Deficit` (hours below the recommended 8 h), `Activity_Stress_Ratio` (physical activity ÷ stress level)
-
-**Target — Classification:** `Sleep_Disorder` with three classes — None (82.4 %), Sleep Apnea (13.4 %), Insomnia (4.2 %)
-
-**Target — Regression:** `Quality_of_Sleep` — integer score 1 to 10
+##  Features (23 input variables):
+ 
+| Category | Features |
+|---|---|
+| Demographics | Age, Gender, Occupation, BMI Category, Smoking Status |
+| Sleep | Sleep Duration (hrs), Awakenings Per Night, Nap Duration (mins), Is Weekend |
+| Activity | Physical Activity (mins), Daily Steps, Exercise Type |
+| Health | Heart Rate (BPM), Mental Health Score, Stress Level |
+| Lifestyle | Caffeine Intake (mg), Alcohol Units/Week, Screen Time Before Bed (mins), Work Hours/Day |
+| Environment | Room Temperature (°C), Noise Level (dB) |
+| Engineered | Sleep Deficit (`max(0, 8 − Sleep_Duration)`), Activity-Stress Ratio (`Activity_Mins / (Stress + 1)`) |
+ 
+**Targets:**
+- `Sleep_Disorder` — 3-class classification: None / Insomnia / Sleep Apnea
+- `Quality_of_Sleep` — regression, score 1–10
 
 ---
 
