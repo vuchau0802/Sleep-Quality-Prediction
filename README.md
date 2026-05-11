@@ -62,3 +62,13 @@ python train_model.py
 python app.py
 ```
 
+---
+
+## Demo
+
+![Chat Interface](demo/1.png)
+
+![Chat Interface](demo/2.png)
+
+> Recommendations are prioritized as: `Critical → High → Medium → Low` and cover 18+ categories including stress, caffeine, alcohol, screen time, activity, environment, occupation, and compounding risk factors.
+![Chat Interface](demo/3.png)
